@@ -10,6 +10,8 @@ public class ColorSourceView : MonoBehaviour
     void Start ()
     {
         gameObject.GetComponent<Renderer>().material.SetTextureScale("_MainTex", new Vector2(-1, 1));
+
+        this.transform.localScale = new Vector3(Screen.width / 100, Screen.height / 100, 1);
     }
     
     void Update()
