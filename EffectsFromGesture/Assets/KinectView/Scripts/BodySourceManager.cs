@@ -12,7 +12,11 @@ public class BodySourceManager : MonoBehaviour
     {
         return _Data;
     }
-    
+
+    public KinectSensor Sensor
+    {
+        get { return _Sensor; }
+    }
 
     void Start () 
     {
