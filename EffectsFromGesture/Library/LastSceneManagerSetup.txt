@@ -1,4 +1,4 @@
 sceneSetups:
-- path: C:/Users/dicen/Desktop/Claps/Assets/clap.unity
+- path: Assets/KinectView/MainScene.unity
   isLoaded: 1
   isActive: 1
