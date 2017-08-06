@@ -18,6 +18,8 @@ public class BodySourceManager : MonoBehaviour
         get { return _Sensor; }
     }
 
+    public Windows.Kinect.Vector4 FloorClipPlane { get; private set; }
+
     void Start () 
     {
         _Sensor = KinectSensor.GetDefault();
@@ -46,6 +48,8 @@ public class BodySourceManager : MonoBehaviour
                 }
                 
                 frame.GetAndRefreshBodyData(_Data);
+
+                FloorClipPlane = frame.FloorClipPlane;
                 
                 frame.Dispose();
                 frame = null;
