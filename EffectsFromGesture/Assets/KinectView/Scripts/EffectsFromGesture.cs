@@ -19,26 +19,20 @@ public class EffectsFromGesture : MonoBehaviour
     private Dictionary<Gesture, DiscreteGestureResult> _DiscreteGestureResults;
     private List<Gesture> _Gestures = new List<Gesture>();
     private Gesture _Jump;
-    private Gesture _JumpProgress;
-
+    
     private bool _IsAddGesture = false;
-    private int _InitTime = 200;
-    private int _InitCount = 0;
-
+    
     // Use this for initialization
     void Start ()
     {
-        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/Jump.gbd");
+        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/NewJump.gbd");
         
         foreach (var gesture in _GestureDatabase.AvailableGestures)
         {
             switch (gesture.Name)
             {
-                case "Jump":
+                case "Jump2":
                     _Jump = gesture;
-                    break;
-                case "JumpProgress":
-                    _JumpProgress = gesture;
                     break;
             }
 
@@ -120,13 +114,6 @@ public class EffectsFromGesture : MonoBehaviour
 
     private void _GestureFrameReader_FrameArrived(object sender, VisualGestureBuilderFrameArrivedEventArgs e)
     {
-        if (_InitCount < _InitTime)
-        {
-            Debug.Log(_InitCount);
-            _InitCount++;
-            return;
-        }
-
         if (!_GestureFrameSource.IsTrackingIdValid)
             return;
 
@@ -149,7 +136,6 @@ public class EffectsFromGesture : MonoBehaviour
                         GameObject body = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
                         Vector3 pos = body.transform.Find(JointType.SpineBase.ToString()).transform.position;
                         EffekseerSystem.PlayEffect("MagicArea", pos);
-                        _InitCount = 0;
                     }
                 }
             }
