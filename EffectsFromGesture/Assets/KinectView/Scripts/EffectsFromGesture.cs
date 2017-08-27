@@ -21,6 +21,7 @@ public class EffectsFromGesture : MonoBehaviour
     private Gesture _Jump;
     
     private bool _IsAddGesture = false;
+    private const string _EffectName = "MagicArea";
     
     // Use this for initialization
     void Start ()
@@ -39,6 +40,8 @@ public class EffectsFromGesture : MonoBehaviour
             _Gestures.Add(gesture);
         }
 
+        // loadEffect
+        EffekseerSystem.LoadEffect(_EffectName);
     }
 	
 	// Update is called once per frame
@@ -135,7 +138,9 @@ public class EffectsFromGesture : MonoBehaviour
                         // Jumpした
                         GameObject body = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
                         Vector3 pos = body.transform.Find(JointType.SpineBase.ToString()).transform.position;
-                        EffekseerSystem.PlayEffect("MagicArea", pos);
+                        pos.y -= _BodyManager.FloorClipPlane.Y;
+                        Debug.Log(pos);
+                        EffekseerSystem.PlayEffect(_EffectName, pos);
                     }
                 }
             }
