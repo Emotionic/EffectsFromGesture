@@ -12,9 +12,7 @@ public class ColorBodySourceView : MonoBehaviour
     private BodySourceManager _BodyManager;
 
     public Camera ConvertCamera;
-
-    public bool IsCreateBodyObject { get; private set; }
-
+    
     private Kinect.CoordinateMapper _CoordinateMapper;
     private int _KinectWidth = 1920;
     private int _KinectHeight = 1080;
@@ -50,12 +48,7 @@ public class ColorBodySourceView : MonoBehaviour
         { Kinect.JointType.SpineShoulder, Kinect.JointType.Neck },
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
-
-    private void Start()
-    {
-        IsCreateBodyObject = false;
-    }
-
+    
     void Update () 
     {
         if (BodySourceManager == null)
@@ -98,7 +91,6 @@ public class ColorBodySourceView : MonoBehaviour
             {
                 Destroy(_Bodies[trackingId]);
                 _Bodies.Remove(trackingId);
-                IsCreateBodyObject = false;
             }
         }
 
@@ -143,8 +135,18 @@ public class ColorBodySourceView : MonoBehaviour
             jointObj.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
+
+            if(jt == Kinect.JointType.HandTipLeft || jt ==Kinect.JointType.HandTipRight)
+            {
+                TrailRenderer hand_tr = jointObj.AddComponent<TrailRenderer>();
+                hand_tr.material = BoneMaterial;
+                hand_tr.startWidth = 0.1f;
+                hand_tr.endWidth = 0.1f;
+                hand_tr.startColor = Color.red;
+                hand_tr.endColor = new Color(255, 255, 255, 0);
+                hand_tr.time = 0.5f;
+            }
         }
-        IsCreateBodyObject = true;
         
         return body;
     }

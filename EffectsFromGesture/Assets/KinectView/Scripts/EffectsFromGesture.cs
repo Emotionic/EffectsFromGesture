@@ -21,10 +21,8 @@ public class EffectsFromGesture : MonoBehaviour
     private List<Gesture> _Gestures = new List<Gesture>();
     private Gesture _Jump;
     private GameObject _BodyObj;
-    private Material _TrailMaterial;
     
     private bool _IsAddGesture = false;
-    private bool _IsSetTrailRenderer = false;
     private const string _EffectName = "StairBroken";
     
     // Use this for initialization
@@ -46,9 +44,6 @@ public class EffectsFromGesture : MonoBehaviour
 
         // loadEffect
         EffekseerSystem.LoadEffect(_EffectName);
-
-        // set material
-        _TrailMaterial = new Material(Shader.Find("Sprites/Default"));
     }
 	
 	// Update is called once per frame
@@ -88,18 +83,12 @@ public class EffectsFromGesture : MonoBehaviour
         if (!_GestureFrameSource.IsTrackingIdValid)
         {
             FindValidBody();
-            _IsSetTrailRenderer = false;
         }
         else
         {
             Debug.Log(_GestureFrameSource.TrackingId);
             _BodyObj = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
             Debug.Log(_BodyObj.name);
-        }
-
-        if (!_IsSetTrailRenderer)
-        {
-            SetTrailRenderer();
         }
     }
 
@@ -136,32 +125,7 @@ public class EffectsFromGesture : MonoBehaviour
             _GestureFrameReader.IsPaused = true;
         }
     }
-
-    private void SetTrailRenderer()
-    {
-        if (_BodyObj == null)
-            return;
-
-        TrailRenderer[] hands_tr =
-        {
-            _BodyObj.transform.Find(JointType.HandTipRight.ToString()).gameObject.AddComponent<TrailRenderer>(),
-            _BodyObj.transform.Find(JointType.HandTipLeft.ToString()).gameObject.AddComponent<TrailRenderer>()
-        };
-
-        foreach (TrailRenderer hand_tr in hands_tr)
-        {
-            hand_tr.material = _TrailMaterial;
-            hand_tr.startWidth = 0.1f;
-            hand_tr.endWidth = 0.1f;
-            hand_tr.startColor = Color.red;
-            hand_tr.endColor = new Color(255, 255, 255, 0);
-            hand_tr.time = 0.5f;
-        }
-
-        _IsSetTrailRenderer = true;
-    }
-
-
+    
     private void _GestureFrameReader_FrameArrived(object sender, VisualGestureBuilderFrameArrivedEventArgs e)
     {
         if (!_GestureFrameSource.IsTrackingIdValid)
