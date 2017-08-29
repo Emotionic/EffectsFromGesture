@@ -21,18 +21,18 @@ public class EffectsFromGesture : MonoBehaviour
     private Gesture _Jump;
     
     private bool _IsAddGesture = false;
-    private const string _EffectName = "MagicArea";
+    private const string _EffectName = "StairBroken";
     
     // Use this for initialization
     void Start ()
     {
-        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/NewJump.gbd");
+        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/SingleJump.gbd");
         
         foreach (var gesture in _GestureDatabase.AvailableGestures)
         {
             switch (gesture.Name)
             {
-                case "Jump2":
+                case "Jump":
                     _Jump = gesture;
                     break;
             }
@@ -135,12 +135,16 @@ public class EffectsFromGesture : MonoBehaviour
 
                     if (result.Detected == true)
                     {
-                        // Jumpした
-                        GameObject body = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
-                        Vector3 pos = body.transform.Find(JointType.SpineBase.ToString()).transform.position;
-                        pos.y -= _BodyManager.FloorClipPlane.Y;
-                        Debug.Log(pos);
-                        EffekseerSystem.PlayEffect(_EffectName, pos);
+                        Debug.Log(result.Confidence);
+                        if(result.Confidence > 0.75)
+                        {
+                            // Jumpした
+                            GameObject body = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
+                            Vector3 pos = body.transform.Find(JointType.SpineMid.ToString()).transform.position;
+                            pos.y -= _BodyManager.FloorClipPlane.Y;
+                            Debug.Log(pos);
+                            EffekseerSystem.PlayEffect(_EffectName, pos);
+                        }
                     }
                 }
             }
