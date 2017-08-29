@@ -12,6 +12,7 @@ public class EffectsFromGesture : MonoBehaviour
     public GameObject BodySourceManager;
 
     private BodySourceManager _BodyManager;
+    private ColorBodySourceView _ColorBodyView;
     private VisualGestureBuilderDatabase _GestureDatabase;
     private VisualGestureBuilderFrameSource _GestureFrameSource;
     private VisualGestureBuilderFrameReader _GestureFrameReader;
@@ -19,8 +20,11 @@ public class EffectsFromGesture : MonoBehaviour
     private Dictionary<Gesture, DiscreteGestureResult> _DiscreteGestureResults;
     private List<Gesture> _Gestures = new List<Gesture>();
     private Gesture _Jump;
+    private GameObject _BodyObj;
+    private Material _TrailMaterial;
     
     private bool _IsAddGesture = false;
+    private bool _IsSetTrailRenderer = false;
     private const string _EffectName = "StairBroken";
     
     // Use this for initialization
@@ -42,6 +46,9 @@ public class EffectsFromGesture : MonoBehaviour
 
         // loadEffect
         EffekseerSystem.LoadEffect(_EffectName);
+
+        // set material
+        _TrailMaterial = new Material(Shader.Find("Sprites/Default"));
     }
 	
 	// Update is called once per frame
@@ -51,8 +58,9 @@ public class EffectsFromGesture : MonoBehaviour
             return;
 
         _BodyManager = BodySourceManager.GetComponent<BodySourceManager>();
+        _ColorBodyView = BodySourceManager.GetComponent<ColorBodySourceView>();
 
-        if (_BodyManager == null)
+        if (_BodyManager == null || _ColorBodyView == null)
             return;
 
         if (!_IsAddGesture)
@@ -79,6 +87,13 @@ public class EffectsFromGesture : MonoBehaviour
         
         if (!_GestureFrameSource.IsTrackingIdValid)
             FindValidBody();
+
+        if (_ColorBodyView.IsCreateBodyObject && !_IsSetTrailRenderer)
+        {
+            _BodyObj = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
+            SetTrailRenderer();
+            _IsSetTrailRenderer = true;
+        }
     }
 
     private void FindValidBody()
@@ -106,11 +121,38 @@ public class EffectsFromGesture : MonoBehaviour
         {
             _GestureFrameSource.TrackingId = id;
             _GestureFrameReader.IsPaused = false;
+            Debug.Log("SET");
         }
         else
         {
+            _BodyObj = null;
             _GestureFrameSource.TrackingId = 0;
             _GestureFrameReader.IsPaused = true;
+        }
+    }
+
+    private void SetTrailRenderer()
+    {
+        if (_BodyObj == null)
+        {
+            Debug.Log("NULL");
+            return;
+        }
+
+        TrailRenderer[] hands_tr =
+        {
+            _BodyObj.transform.Find(JointType.HandTipRight.ToString()).gameObject.AddComponent<TrailRenderer>(),
+            _BodyObj.transform.Find(JointType.HandTipLeft.ToString()).gameObject.AddComponent<TrailRenderer>()
+        };
+
+        foreach (TrailRenderer hand_tr in hands_tr)
+        {
+            hand_tr.material = _TrailMaterial;
+            hand_tr.startWidth = 0.1f;
+            hand_tr.endWidth = 0.1f;
+            hand_tr.startColor = Color.red;
+            hand_tr.endColor = new Color(255, 255, 255, 0);
+            hand_tr.time = 0.5f;
         }
     }
 
@@ -135,13 +177,11 @@ public class EffectsFromGesture : MonoBehaviour
 
                     if (result.Detected == true)
                     {
-                        Debug.Log(result.Confidence);
+                        Debug.Log("Confidence : "+  result.Confidence);
                         if(result.Confidence > 0.75)
                         {
                             // Jumpした
-                            GameObject body = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
-                            Vector3 pos = body.transform.Find(JointType.SpineMid.ToString()).transform.position;
-                            pos.y -= _BodyManager.FloorClipPlane.Y;
+                            Vector3 pos = _BodyObj.transform.Find(JointType.SpineMid.ToString()).transform.position;
                             Debug.Log(pos);
                             EffekseerSystem.PlayEffect(_EffectName, pos);
                         }

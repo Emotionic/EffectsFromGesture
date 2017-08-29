@@ -13,6 +13,8 @@ public class ColorBodySourceView : MonoBehaviour
 
     public Camera ConvertCamera;
 
+    public bool IsCreateBodyObject { get; private set; }
+
     private Kinect.CoordinateMapper _CoordinateMapper;
     private int _KinectWidth = 1920;
     private int _KinectHeight = 1080;
@@ -48,7 +50,12 @@ public class ColorBodySourceView : MonoBehaviour
         { Kinect.JointType.SpineShoulder, Kinect.JointType.Neck },
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
-    
+
+    private void Start()
+    {
+        IsCreateBodyObject = false;
+    }
+
     void Update () 
     {
         if (BodySourceManager == null)
@@ -136,6 +143,7 @@ public class ColorBodySourceView : MonoBehaviour
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
         }
+        IsCreateBodyObject = true;
         
         return body;
     }
