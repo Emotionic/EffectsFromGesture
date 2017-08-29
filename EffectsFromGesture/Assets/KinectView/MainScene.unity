@@ -258,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec5e882d70c5ad46ad4af14c75e4fcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BodyView: 0
   BoneMaterial: {fileID: 2100000, guid: f2ea145c63353784985576f08398a815, type: 2}
   BodySourceManager: {fileID: 689630467}
   ConvertCamera: {fileID: 814211668}

@@ -135,7 +135,7 @@ MonoBehaviour:
   m_MinSize: {x: 202, y: 442}
   m_MaxSize: {x: 4002, y: 8042}
   vertical: 1
-  controlID: 46
+  controlID: 22
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -385,7 +385,7 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets/KinectView/Materials
+    - Assets/Effekseer
   m_ViewMode: 0
   m_StartGridSize: 64
   m_LastFolders:
@@ -397,7 +397,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 54270000
     m_LastClickedID: 10068
-    m_ExpandedIDs: 000000005c2700006e2700009e270000ac270000c2270000e8270000102800001e280000
+    m_ExpandedIDs: 00000000582700006a2700009a270000a8270000be270000e42700000c2800001a280000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -425,7 +425,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000005c2700006e2700009e270000ac270000c2270000e8270000102800001e280000
+    m_ExpandedIDs: 00000000582700009a270000a8270000be2700000c2800001a280000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
