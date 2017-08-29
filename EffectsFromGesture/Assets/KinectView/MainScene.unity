@@ -613,6 +613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BodySourceManager: {fileID: 689630467}
+  TrailMaterial: {fileID: 2100000, guid: 046ec27f6b755bf4b9fee613c27c393c, type: 2}
 --- !u!4 &1935534572
 Transform:
   m_ObjectHideFlags: 0

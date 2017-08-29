@@ -10,6 +10,7 @@ using Kinect = Windows.Kinect;
 public class EffectsFromGesture : MonoBehaviour
 {
     public GameObject BodySourceManager;
+    public Material TrailMaterial;
 
     private BodySourceManager _BodyManager;
     private ColorBodySourceView _ColorBodyView;
@@ -23,6 +24,7 @@ public class EffectsFromGesture : MonoBehaviour
     private GameObject _BodyObj;
     
     private bool _IsAddGesture = false;
+    private bool _IsSetEvent = false;
     private const string _EffectName = "StairBroken";
     
     // Use this for initialization
@@ -58,6 +60,12 @@ public class EffectsFromGesture : MonoBehaviour
         if (_BodyManager == null || _ColorBodyView == null)
             return;
 
+        if(!_IsSetEvent)
+        {
+            _ColorBodyView.CreatedBodyObj += _ColorBodyView_CreatedBodyObj;
+            _IsSetEvent = true;
+        }
+
         if (!_IsAddGesture)
         {
             _GestureFrameSource = VisualGestureBuilderFrameSource.Create(_BodyManager.Sensor, 0);
@@ -81,14 +89,31 @@ public class EffectsFromGesture : MonoBehaviour
             return;
 
         if (!_GestureFrameSource.IsTrackingIdValid)
-        {
             FindValidBody();
-        }
-        else
+        
+    }
+
+    private void _ColorBodyView_CreatedBodyObj(GameObject body)
+    {
+        Debug.Log("EVENT");
+
+        _BodyObj = body;
+
+        TrailRenderer[] hands_tr =
         {
-            Debug.Log(_GestureFrameSource.TrackingId);
-            _BodyObj = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
-            Debug.Log(_BodyObj.name);
+            body.transform.Find(JointType.HandTipRight.ToString()).gameObject.AddComponent<TrailRenderer>(),
+            body.transform.Find(JointType.HandTipLeft.ToString()).gameObject.AddComponent<TrailRenderer>()
+        };
+
+        foreach (TrailRenderer hand_tr in hands_tr)
+        {
+            hand_tr.material = TrailMaterial;
+            hand_tr.startWidth = 0.1f;
+            hand_tr.endWidth = 0.1f;
+            hand_tr.startColor = Color.red;
+            hand_tr.endColor = new Color(255, 255, 255, 0);
+            hand_tr.time = 0.5f;
+            Debug.Log("ADD TR :" + hand_tr.name);
         }
     }
 
@@ -120,7 +145,6 @@ public class EffectsFromGesture : MonoBehaviour
         }
         else
         {
-            _BodyObj = null;
             _GestureFrameSource.TrackingId = 0;
             _GestureFrameReader.IsPaused = true;
         }

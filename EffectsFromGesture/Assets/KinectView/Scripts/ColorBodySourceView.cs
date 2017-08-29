@@ -5,6 +5,9 @@ using Kinect = Windows.Kinect;
 
 public class ColorBodySourceView : MonoBehaviour 
 {
+    public delegate void CreatedBodyHandler(GameObject gameObj);
+    public event CreatedBodyHandler CreatedBodyObj;
+
     public Material BoneMaterial;
     public GameObject BodySourceManager;
     
@@ -107,7 +110,7 @@ public class ColorBodySourceView : MonoBehaviour
                 {
                     _Bodies[body.TrackingId] = CreateBodyObject(body.TrackingId);
                 }
-                
+
                 RefreshBodyObject(body, _Bodies[body.TrackingId]);
             }
         }
@@ -135,19 +138,14 @@ public class ColorBodySourceView : MonoBehaviour
             jointObj.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
-
-            if(jt == Kinect.JointType.HandTipLeft || jt ==Kinect.JointType.HandTipRight)
-            {
-                TrailRenderer hand_tr = jointObj.AddComponent<TrailRenderer>();
-                hand_tr.material = BoneMaterial;
-                hand_tr.startWidth = 0.1f;
-                hand_tr.endWidth = 0.1f;
-                hand_tr.startColor = Color.red;
-                hand_tr.endColor = new Color(255, 255, 255, 0);
-                hand_tr.time = 0.5f;
-            }
+            
         }
         
+        if (CreatedBodyObj != null)
+        {
+            CreatedBodyObj(body);
+        }
+
         return body;
     }
     
