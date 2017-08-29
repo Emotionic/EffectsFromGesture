@@ -98,6 +98,7 @@ public class ColorBodySourceView : MonoBehaviour
             {
                 Destroy(_Bodies[trackingId]);
                 _Bodies.Remove(trackingId);
+                IsCreateBodyObject = false;
             }
         }
 

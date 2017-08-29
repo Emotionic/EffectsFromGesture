@@ -84,15 +84,22 @@ public class EffectsFromGesture : MonoBehaviour
 
         if (_GestureFrameSource == null || _GestureFrameReader == null)
             return;
-        
-        if (!_GestureFrameSource.IsTrackingIdValid)
-            FindValidBody();
 
-        if (_ColorBodyView.IsCreateBodyObject && !_IsSetTrailRenderer)
+        if (!_GestureFrameSource.IsTrackingIdValid)
         {
+            FindValidBody();
+            _IsSetTrailRenderer = false;
+        }
+        else
+        {
+            Debug.Log(_GestureFrameSource.TrackingId);
             _BodyObj = GameObject.Find("Body:" + _GestureFrameSource.TrackingId);
+            Debug.Log(_BodyObj.name);
+        }
+
+        if (!_IsSetTrailRenderer)
+        {
             SetTrailRenderer();
-            _IsSetTrailRenderer = true;
         }
     }
 
@@ -121,7 +128,6 @@ public class EffectsFromGesture : MonoBehaviour
         {
             _GestureFrameSource.TrackingId = id;
             _GestureFrameReader.IsPaused = false;
-            Debug.Log("SET");
         }
         else
         {
@@ -134,10 +140,7 @@ public class EffectsFromGesture : MonoBehaviour
     private void SetTrailRenderer()
     {
         if (_BodyObj == null)
-        {
-            Debug.Log("NULL");
             return;
-        }
 
         TrailRenderer[] hands_tr =
         {
@@ -154,6 +157,8 @@ public class EffectsFromGesture : MonoBehaviour
             hand_tr.endColor = new Color(255, 255, 255, 0);
             hand_tr.time = 0.5f;
         }
+
+        _IsSetTrailRenderer = true;
     }
 
 
