@@ -5,12 +5,26 @@ using Kinect = Windows.Kinect;
 
 public class ColorBodySourceView : MonoBehaviour 
 {
-    public delegate void CreatedBodyHandler(GameObject gameObj);
-    public event CreatedBodyHandler CreatedBodyObj;
-
     public bool BodyView;
     public Material BoneMaterial;
     public GameObject BodySourceManager;
+
+    public GameObject[] GetBodies()
+    {
+        GameObject[] bodies = new GameObject[_Bodies.Count];
+
+        _Bodies.Values.CopyTo(bodies, 0);
+
+        return bodies;
+    }
+
+    public GameObject GetBody(ulong id)
+    {
+        if (_Bodies.ContainsKey(id))
+            return _Bodies[id];
+        else
+            return null;
+    }
     
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
@@ -146,11 +160,6 @@ public class ColorBodySourceView : MonoBehaviour
             jointObj.transform.parent = body.transform;
         }
         
-        if (CreatedBodyObj != null)
-        {
-            CreatedBodyObj(body);
-        }
-
         return body;
     }
     
