@@ -5,19 +5,45 @@ using Kinect = Windows.Kinect;
 
 public class ColorBodySourceView : MonoBehaviour 
 {
-    public bool BodyView;
+    /// <summary>
+    /// 認識した関節を表示するか
+    /// </summary>
+    public bool IsBodyView;
+    
+    /// <summary>
+    /// 関節表示用マテリアル
+    /// </summary>
     public Material BoneMaterial;
+
+    /// <summary>
+    /// BodySourceManagerクラス取得用オブジェクト
+    /// </summary>
     public GameObject BodySourceManager;
 
+    /// <summary>
+    /// 視点変換用カメラ
+    /// </summary>
+    public Camera ConvertCamera;
+
+    /// <summary>
+    /// Kinectで取得したBodyデータを渡す
+    /// </summary>
+    /// <returns>取得したBodyデータ</returns>
     public GameObject[] GetBodies()
     {
+        // DictionaryからBodyデータのみを渡す
         GameObject[] bodies = new GameObject[_Bodies.Count];
-
+        
         _Bodies.Values.CopyTo(bodies, 0);
 
         return bodies;
     }
 
+    /// <summary>
+    /// IDを指定して一つのBodyデータを渡す
+    /// </summary>
+    /// <param name="id">BodyのID</param>
+    /// <returns>idに紐付けられたBodyデータ</returns>
     public GameObject GetBody(ulong id)
     {
         if (_Bodies.ContainsKey(id))
@@ -26,10 +52,15 @@ public class ColorBodySourceView : MonoBehaviour
             return null;
     }
     
+    /// <summary>
+    /// idとBodyオブジェクトの辞書
+    /// </summary>
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
-    private BodySourceManager _BodyManager;
 
-    public Camera ConvertCamera;
+    /// <summary>
+    /// インスタンス化されたBodyManager
+    /// </summary>
+    private BodySourceManager _BodyManager;
     
     private Kinect.CoordinateMapper _CoordinateMapper;
     private int _KinectWidth = 1920;
@@ -92,7 +123,7 @@ public class ColorBodySourceView : MonoBehaviour
             if (body == null)
             {
                 continue;
-              }
+            }
                 
             if(body.IsTracked)
             {
@@ -144,7 +175,7 @@ public class ColorBodySourceView : MonoBehaviour
         {
             GameObject jointObj = new GameObject();
             
-            if(BodyView)
+            if(IsBodyView)
             {
                 LineRenderer lr = jointObj.AddComponent<LineRenderer>();
                 lr.positionCount = 2;
@@ -176,7 +207,7 @@ public class ColorBodySourceView : MonoBehaviour
             Transform jointObj = bodyObject.transform.Find(jt.ToString());
             jointObj.localPosition = GetVector3FromJoint(sourceJoint);
 
-            if (BodyView)
+            if (IsBodyView)
             {
                 LineRenderer lr = jointObj.GetComponent<LineRenderer>();
 
