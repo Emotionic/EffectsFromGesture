@@ -22,23 +22,27 @@ public class EffectsFromGesture : MonoBehaviour
     private Dictionary<Gesture, DiscreteGestureResult> _DiscreteGestureResults;
     private List<Gesture> _Gestures = new List<Gesture>();
     private Gesture _Jump;
+    private Gesture _OpenMenu;
     
     private bool _IsAddGesture = false;
     private bool _IsSetEvent = false;
     private const string _EffectName = "StairBroken";
     private const int AcquirableBodyNumber = 6;
-
+    
     // Use this for initialization
     void Start ()
     {
-        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/SingleJump.gbd");
+        _GestureDatabase = VisualGestureBuilderDatabase.Create(@"./Gestures/Emotionic.gbd");
         
         foreach (var gesture in _GestureDatabase.AvailableGestures)
         {
             switch (gesture.Name)
             {
-                case "Jump":
+                case "Jump02":
                     _Jump = gesture;
+                    break;
+                case "OpenMenu":
+                    _OpenMenu = gesture;
                     break;
             }
 
@@ -100,38 +104,9 @@ public class EffectsFromGesture : MonoBehaviour
         {
             if(_GestureFrameSourcesList[i].IsTrackingIdValid)
             {
-                var gestureFrame = _GestureFrameReadersList[i].CalculateAndAcquireLatestFrame();
-
-                if (gestureFrame != null && gestureFrame.DiscreteGestureResults != null)
-                {
-                    _DiscreteGestureResults = gestureFrame.DiscreteGestureResults;
-
-                    if (_DiscreteGestureResults != null && _DiscreteGestureResults.ContainsKey(_Jump))
-                    {
-                        var result = _DiscreteGestureResults[_Jump];
-
-                        if (result == null)
-                            return;
-
-                        if (result.Detected == true)
-                        {
-                            if (result.Confidence > 0.75)
-                            {
-                                Debug.Log("Confidence : " + result.Confidence);
-
-                                // Jumpした
-                                Vector3 pos = _ColorBodyView.GetBody
-                                    (
-                                        _GestureFrameSourcesList[i].TrackingId
-                                    )
-                                    .transform.Find(JointType.SpineMid.ToString()).transform.position;
-                                
-                                Debug.Log(pos);
-                                EffekseerSystem.PlayEffect(_EffectName, pos);
-                            }
-                        }
-                    }
-                }
+                AddEffect(
+                    _GestureFrameReadersList[i].CalculateAndAcquireLatestFrame(),
+                    _GestureFrameSourcesList[i].TrackingId);
             }
         }
     }
@@ -194,7 +169,6 @@ public class EffectsFromGesture : MonoBehaviour
 
     private void SetBody(ulong id, int i)
     {
-        Debug.Log("List[" + i + "] : " + _GestureFrameSourcesList[i].TrackingId);
         if (_GestureFrameSourcesList[i].TrackingId > 0)
         {
             _TrackedIds.Remove(_GestureFrameSourcesList[i].TrackingId);
@@ -208,5 +182,40 @@ public class EffectsFromGesture : MonoBehaviour
         _GestureFrameReadersList[i].IsPaused = false;
         _TrackedIds.Add(id);
     }
-    
+
+    private void AddEffect(VisualGestureBuilderFrame gestureFrame, ulong id)
+    {
+        if (gestureFrame == null || gestureFrame.DiscreteGestureResults == null)
+            return;
+        _DiscreteGestureResults = gestureFrame.DiscreteGestureResults;
+
+        if (_DiscreteGestureResults == null)
+            return;
+
+        foreach (var result in _DiscreteGestureResults)
+        {
+            if (result.Value == null || !result.Value.Detected)
+                continue;
+
+            if (result.Value.Confidence < 0.5)
+                continue;
+
+            switch (result.Key.Name)
+            {
+                case "Jump02":
+                    Debug.Log("Jump02 Confidence : " + result.Value.Confidence);
+
+                    // Jumpした
+                    Vector3 pos =
+                        _ColorBodyView.GetBody(id).transform.Find(JointType.SpineMid.ToString()).transform.position;
+                    
+                    EffekseerSystem.PlayEffect(_EffectName, pos);
+                    break;
+                case "OpenMenu":
+                    Debug.Log("OpenMenu Confidence : " + result.Value.Confidence);
+                    break;
+            }
+            
+        }
+    }
 }

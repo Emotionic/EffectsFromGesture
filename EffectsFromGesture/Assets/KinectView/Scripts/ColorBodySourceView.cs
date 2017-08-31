@@ -142,9 +142,7 @@ public class ColorBodySourceView : MonoBehaviour
         
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
-            GameObject jointObj = BodyView
-                ? GameObject.CreatePrimitive(PrimitiveType.Cube)
-                : new GameObject();
+            GameObject jointObj = new GameObject();
             
             if(BodyView)
             {
@@ -155,7 +153,7 @@ public class ColorBodySourceView : MonoBehaviour
                 lr.endWidth = 0.05f;
             }
 
-            jointObj.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            jointObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
         }
