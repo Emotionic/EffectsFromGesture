@@ -61,11 +61,25 @@ public class ColorBodySourceView : MonoBehaviour
     /// インスタンス化されたBodyManager
     /// </summary>
     private BodySourceManager _BodyManager;
-    
+
+    /// <summary>
+    /// 各座標系を対応付けるためのクラス
+    /// </summary>
     private Kinect.CoordinateMapper _CoordinateMapper;
-    private int _KinectWidth = 1920;
-    private int _KinectHeight = 1080;
+
+    /// <summary>
+    /// Kinectから取得できる画像の幅
+    /// </summary>
+    private const int _KinectWidth = 1920;
+
+    /// <summary>
+    /// Kinectから取得できる画像の高さ
+    /// </summary>
+    private const int _KinectHeight = 1080;
     
+    /// <summary>
+    /// 各関節のHead向きで隣にある関節を取得するための辞書
+    /// </summary>
     private Dictionary<Kinect.JointType, Kinect.JointType> _BoneMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
     {
         { Kinect.JointType.FootLeft, Kinect.JointType.AnkleLeft },
@@ -98,6 +112,9 @@ public class ColorBodySourceView : MonoBehaviour
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
     
+    /// <summary>
+    /// Unityのアップデートメソッド
+    /// </summary>
     void Update () 
     {
         if (BodySourceManager == null)
@@ -167,6 +184,11 @@ public class ColorBodySourceView : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Kinectのbodyデータを元にUnityのオブジェクトを生成する
+    /// </summary>
+    /// <param name="id">Body固有のID</param>
+    /// <returns>生成されたBodyのオブジェクト</returns>
     private GameObject CreateBodyObject(ulong id)
     {
         GameObject body = new GameObject("Body:" + id);
@@ -192,6 +214,11 @@ public class ColorBodySourceView : MonoBehaviour
         return body;
     }
     
+    /// <summary>
+    /// Bodyオブジェクトのデータを更新する
+    /// </summary>
+    /// <param name="body">更新するbodyデータ</param>
+    /// <param name="bodyObject">オブジェクト</param>
     private void RefreshBodyObject(Kinect.Body body, GameObject bodyObject)
     {
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
@@ -226,6 +253,11 @@ public class ColorBodySourceView : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Kinectの関節情報の確からしさを色で表す。
+    /// </summary>
+    /// <param name="state">関節状態</param>
+    /// <returns>関節状態を表す色</returns>
     private static Color GetColorForState(Kinect.TrackingState state)
     {
         switch (state)
@@ -241,6 +273,11 @@ public class ColorBodySourceView : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Kinectの関節座標をUnityの関節座標に変換する
+    /// </summary>
+    /// <param name="joint">Unity座標に変換する関節</param>
+    /// <returns>対応するUnity座標</returns>
     private Vector3 GetVector3FromJoint(Kinect.Joint joint)
     {
         // 変換用カメラがあり、関節がトラッキング中

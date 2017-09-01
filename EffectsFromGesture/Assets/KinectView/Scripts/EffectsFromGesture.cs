@@ -9,28 +9,78 @@ using Kinect = Windows.Kinect;
 
 public class EffectsFromGesture : MonoBehaviour
 {
+    /// <summary>
+    /// BodySourceManagerクラス取得用オブジェクト
+    /// </summary>
     public GameObject BodySourceManager;
+
+    /// <summary>
+    /// TrailRendererを表示するためのマテリアル
+    /// </summary>
     public Material TrailMaterial;
 
+    /// <summary>
+    /// インスタンス化されたBodyManager
+    /// </summary>
     private BodySourceManager _BodyManager;
+
+    /// <summary>
+    /// Kinect画像と取得した関節情報を表示する
+    /// </summary>
     private ColorBodySourceView _ColorBodyView;
+
+    /// <summary>
+    /// ジェスチャーのデータベース
+    /// </summary>
     private VisualGestureBuilderDatabase _GestureDatabase;
+    
+    /// <summary>
+    /// ジェスチャーのソースリスト
+    /// </summary>
     private List<VisualGestureBuilderFrameSource> _GestureFrameSourcesList;
+
+    /// <summary>
+    /// ジェスチャーのリーダリスト
+    /// </summary>
     private List<VisualGestureBuilderFrameReader> _GestureFrameReadersList;
+
+    /// <summary>
+    /// トラック中のIDリスト
+    /// </summary>
     private List<ulong> _TrackedIds;
     
+    /// <summary>
+    /// 取得したGestureリザルト
+    /// </summary>
     private Dictionary<Gesture, DiscreteGestureResult> _DiscreteGestureResults;
+
+    /// <summary>
+    /// 学習済みのGestureリスト
+    /// </summary>
     private List<Gesture> _Gestures = new List<Gesture>();
+    
+    /////////////////////////////////////////////////////////// 後でなおす ////////////////////////
     private Gesture _Jump;
     private Gesture _OpenMenu;
     private Gesture _Punch_Left;
     private Gesture _Punch_Right;
     
+    /// <summary>
+    /// Gestureが追加されているか
+    /// </summary>
     private bool _IsAddGesture = false;
-    private bool _IsSetEvent = false;
+    
+    /// <summary>
+    /// エフェクト名
+    /// </summary>
     private readonly string[] _EffectNames = { "StairBroken", "punch" };
+
+    /// <summary>
+    /// Kinectで取得できる人数
+    /// </summary>
     private const int AcquirableBodyNumber = 6;
 
+    // 仮 HSVのH
     private float H = 0f;
     
     // Use this for initialization
@@ -120,13 +170,17 @@ public class EffectsFromGesture : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// 両手足にTrailRendererを付ける
+    /// </summary>
+    /// <param name="body">エフェクトを付けるBody</param>
     private void AddingTrailRendererToBody(GameObject body)
     {
         GameObject handTipLeft = body.transform.Find(JointType.HandTipRight.ToString()).gameObject;
         GameObject handTipRight = body.transform.Find(JointType.HandTipLeft.ToString()).gameObject;
 
-        GameObject thumbLeft = body.transform.Find(JointType.AnkleRight.ToString()).gameObject;
-        GameObject thumbRight = body.transform.Find(JointType.AnkleLeft.ToString()).gameObject;
+        GameObject thumbLeft = body.transform.Find(JointType.FootRight.ToString()).gameObject;
+        GameObject thumbRight = body.transform.Find(JointType.FootLeft.ToString()).gameObject;
 
         if (handTipLeft.GetComponent<TrailRenderer>() != null)
         {
@@ -162,6 +216,9 @@ public class EffectsFromGesture : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 現在有効なBodyを探す
+    /// </summary>
     private void FindValidBodys()
     {
         if(_BodyManager != null)
@@ -193,6 +250,11 @@ public class EffectsFromGesture : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// GestureへBodyを設定する
+    /// </summary>
+    /// <param name="id">設定するID</param>
+    /// <param name="i">設定するGestureデータ番号</param>
     private void SetBody(ulong id, int i)
     {
         if (_GestureFrameSourcesList[i].TrackingId > 0)
@@ -209,6 +271,11 @@ public class EffectsFromGesture : MonoBehaviour
         _TrackedIds.Add(id);
     }
 
+    /// <summary>
+    /// 検出されたGesture1に応じてEffectを付加する
+    /// </summary>
+    /// <param name="gestureFrame">Gestureを検出したか判断するソース</param>
+    /// <param name="id">Effectを付けるBodyのID</param>
     private void AddEffect(VisualGestureBuilderFrame gestureFrame, ulong id)
     {
         if (gestureFrame == null || gestureFrame.DiscreteGestureResults == null)
@@ -227,7 +294,7 @@ public class EffectsFromGesture : MonoBehaviour
             {
                 case "Jump02":
 
-                    if (result.Value.Confidence < 0.5)
+                    if (result.Value.Confidence < 0.6)
                         continue;
 
                     Debug.Log("Jump02 Confidence : " + result.Value.Confidence);
